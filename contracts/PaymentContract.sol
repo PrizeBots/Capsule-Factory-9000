@@ -7,7 +7,11 @@ import "./GameToken.sol";
 contract PaymentContract is Ownable {
     GameToken public gameToken;
 
-    event TokensPurchased(address indexed buyer, uint256 avaxAmount, uint256 tokenAmount);
+    event TokensPurchased(
+        address indexed buyer,
+        uint256 avaxAmount,
+        uint256 tokenAmount
+    );
     event AVAXReceived(address sender, uint256 amount, uint256 currentBalance);
     event AVAXWithdrawn(address indexed owner, uint256 amount);
     event GameTokenAddressUpdated(address newGameTokenAddress);
@@ -37,7 +41,10 @@ contract PaymentContract is Ownable {
     function withdrawAVAX(uint256 amountInAVAX) external onlyOwner {
         uint256 amountInWei = amountInAVAX * 1 ether; // Convert AVAX to wei
         uint256 balance = address(this).balance;
-        require(balance >= amountInWei, "Not enough AVAX in contract to withdraw");
+        require(
+            balance >= amountInWei,
+            "Not enough AVAX in contract to withdraw"
+        );
 
         // Transfer the specified amount to the owner
         payable(owner()).transfer(amountInWei);
@@ -46,11 +53,12 @@ contract PaymentContract is Ownable {
         emit AVAXWithdrawn(owner(), amountInWei);
     }
 
-    // Function to check the balance of AVAX in the contract
+    // Function to check the balance of AVAX in the contract, in AVAX instead of wei
     function getBalance() external view returns (uint256) {
-        return address(this).balance;
+        return address(this).balance / 1 ether; // Convert wei to AVAX
     }
-      // Function to update the GameToken address (only the owner can update it)
+
+    // Function to update the GameToken address (only the owner can update it)
     function setGameTokenAddress(address _gameTokenAddress) external onlyOwner {
         require(_gameTokenAddress != address(0), "Invalid address");
         gameToken = GameToken(_gameTokenAddress);
